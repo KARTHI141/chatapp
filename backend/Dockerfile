@@ -14,7 +14,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=build /app/target/*.jar app.jar
 COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh && chmod +x /app/entrypoint.sh
 RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app
 
 USER appuser
