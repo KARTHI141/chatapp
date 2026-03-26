@@ -9,6 +9,7 @@ export class WebSocketService {
   private client: Client | null = null;
   private connected$ = new BehaviorSubject<boolean>(false);
   private messageSubject = new Subject<{ destination: string; body: any }>();
+  private pendingSubscriptions: string[] = [];
 
   constructor(private authService: AuthService) {}
 
@@ -27,6 +28,7 @@ export class WebSocketService {
         console.log('WebSocket connected');
         this.connected$.next(true);
         this.subscribeToPersonalQueue();
+        this.replayPendingSubscriptions();
       },
 
       onDisconnect: () => {
@@ -62,6 +64,10 @@ export class WebSocketService {
           body: JSON.parse(message.body)
         });
       });
+    } else {
+      if (!this.pendingSubscriptions.includes(destination)) {
+        this.pendingSubscriptions.push(destination);
+      }
     }
 
     return this.messageSubject.asObservable().pipe(
@@ -107,6 +113,19 @@ export class WebSocketService {
       }
     );
 
+    // Message edit/delete/update queues
+    ['/queue/message.edited', '/queue/message.deleted', '/queue/message.updated'].forEach(queue => {
+      this.client?.subscribe(
+        `/user/${user.userId}${queue}`,
+        (message: IMessage) => {
+          this.messageSubject.next({
+            destination: `/user${queue}`,
+            body: JSON.parse(message.body)
+          });
+        }
+      );
+    });
+
     // Online status topic
     this.client?.subscribe('/topic/status', (message: IMessage) => {
       this.messageSubject.next({
@@ -114,5 +133,11 @@ export class WebSocketService {
         body: JSON.parse(message.body)
       });
     });
+  }
+
+  private replayPendingSubscriptions(): void {
+    const pending = [...this.pendingSubscriptions];
+    this.pendingSubscriptions = [];
+    pending.forEach(dest => this.subscribe(dest));
   }
 }
