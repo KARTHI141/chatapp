@@ -8,15 +8,23 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: DATABASE_URL
+      - key: DB_HOST
         fromDatabase:
           name: chatapp-db
-          property: connectionString
-      - key: DATABASE_USERNAME
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: chatapp-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: chatapp-db
+          property: database
+      - key: DB_USERNAME
         fromDatabase:
           name: chatapp-db
           property: user
-      - key: DATABASE_PASSWORD
+      - key: DB_PASSWORD
         fromDatabase:
           name: chatapp-db
           property: password
