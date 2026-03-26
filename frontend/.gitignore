@@ -3,3 +3,4 @@ dist/
 .angular/
 .env
 *.log
+.vercel
