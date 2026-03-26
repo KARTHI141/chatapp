@@ -8,26 +8,10 @@ services:
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: DB_HOST
+      - key: DATABASE_URL
         fromDatabase:
           name: chatapp-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatapp-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatapp-db
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: chatapp-db
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: chatapp-db
-          property: password
+          property: connectionString
       - key: MONGODB_URI
         sync: false
       - key: REDIS_HOST
