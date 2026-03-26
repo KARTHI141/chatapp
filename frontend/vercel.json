@@ -1,0 +1,20 @@
+{
+  "buildCommand": "npm run build -- --configuration=production",
+  "outputDirectory": "dist/chatapp-frontend/browser",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://chatapp-backend-api.onrender.com/api/:path*" },
+    { "source": "/ws/:path*", "destination": "https://chatapp-backend-api.onrender.com/ws/:path*" },
+    { "source": "/((?!api|ws|assets).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
