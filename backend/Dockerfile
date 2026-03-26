@@ -19,8 +19,6 @@ RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app
 
 USER appuser
 
-ENV SPRING_PROFILES_ACTIVE=prod
-
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
