@@ -1,0 +1,54 @@
+<div class="chat-list">
+  <!-- Search bar -->
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (ngModelChange)="onSearch()"
+      placeholder="Search users to start a chat...">
+  </div>
+
+  <!-- Search results -->
+  @if (searching && searchResults.length > 0) {
+    <div class="search-results">
+      @for (user of searchResults; track user.id) {
+        <div class="user-item" (click)="startChatWithUser(user)">
+          <div class="avatar">{{ user.displayName?.charAt(0) || user.username.charAt(0) | uppercase }}</div>
+          <div class="room-info">
+            <div class="name">{{ user.displayName || user.username }}</div>
+            <div class="last-msg">&#64;{{ user.username }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Room list -->
+  @if (!searching) {
+    @for (room of rooms; track room.id) {
+      <div
+        class="room-item"
+        [class.active]="room.id === activeRoomId"
+        (click)="selectRoom(room)">
+        <div class="avatar">{{ getInitial(room) }}</div>
+        <div class="room-info">
+          <div class="name">{{ getRoomDisplayName(room) }}</div>
+          <div class="last-msg">{{ room.lastMessage || 'No messages yet' }}</div>
+        </div>
+        <div class="room-meta">
+          @if (room.lastMessageAt) {
+            <div class="time">{{ room.lastMessageAt | timeAgo }}</div>
+          }
+          @if (room.unreadCount > 0) {
+            <span class="unread-badge">{{ room.unreadCount }}</span>
+          }
+        </div>
+      </div>
+    } @empty {
+      <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+        <p>No conversations yet</p>
+        <p style="font-size: 12px; margin-top: 4px;">Search for users above to start chatting</p>
+      </div>
+    }
+  }
+</div>

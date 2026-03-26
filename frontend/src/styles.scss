@@ -1,0 +1,57 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #075e54;
+  --primary-dark: #054c44;
+  --secondary: #25d366;
+  --bg-light: #f0f2f5;
+  --bg-chat: #e5ddd5;
+  --bg-white: #ffffff;
+  --text-primary: #111b21;
+  --text-secondary: #667781;
+  --border: #e9edef;
+  --sent-bubble: #d9fdd3;
+  --received-bubble: #ffffff;
+  --danger: #ef4444;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-light);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}

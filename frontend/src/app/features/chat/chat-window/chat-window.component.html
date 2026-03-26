@@ -1,0 +1,136 @@
+<div class="chat-window">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="avatar">{{ room.name?.charAt(0) || '?' }}</div>
+    <div class="info">
+      <div class="name">{{ room.name || 'Chat' }}</div>
+      <div class="status">{{ room.type === 'GROUP' ? room.memberIds.length + ' members' : 'online' }}</div>
+    </div>
+    <div class="header-actions">
+      <button (click)="toggleSearch()" title="Search messages">🔍</button>
+      <button (click)="exportChat()" title="Export chat">📥</button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  @if (showSearch) {
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keydown.enter)="onSearch()"
+        placeholder="Search messages...">
+      <button (click)="onSearch()" style="background: var(--primary); color: white; border: none;">Search</button>
+      <button (click)="closeSearch()" style="background: none; border: 1px solid var(--border);">✕</button>
+    </div>
+  }
+
+  <!-- Search Results -->
+  @if (searchResults.length > 0) {
+    <div class="messages-area" style="max-height: 200px; border-bottom: 2px solid var(--primary);">
+      <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+        {{ searchResults.length }} result(s) found
+      </div>
+      @for (result of searchResults; track result.id) {
+        <div class="message" [class.sent]="isSent(result)" [class.received]="!isSent(result)">
+          <div class="bubble" style="opacity: 0.85;">
+            <div class="sender-name">{{ result.senderUsername }}</div>
+            <div>{{ result.content }}</div>
+            <div class="meta">
+              <span class="time">{{ result.timestamp | timeAgo }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Messages -->
+  <div class="messages-area" #messagesContainer>
+    @for (msg of messages; track msg.id) {
+      <div class="message" [class.sent]="isSent(msg)" [class.received]="!isSent(msg)">
+        <div class="bubble">
+          @if (!isSent(msg) && room.type === 'GROUP') {
+            <div class="sender-name">{{ msg.senderUsername }}</div>
+          }
+
+          <!-- Deleted message -->
+          @if (msg.deleted) {
+            <div class="deleted-msg">🚫 This message was deleted</div>
+          } @else {
+            <!-- Edit mode -->
+            @if (editingMessageId === msg.id) {
+              <div class="edit-input">
+                <input [(ngModel)]="editContent" (keydown.enter)="saveEdit(msg.id)">
+                <button (click)="saveEdit(msg.id)" style="background: var(--primary); color: white; border: none;">✓</button>
+                <button (click)="cancelEdit()" style="background: none; border: 1px solid var(--border);">✕</button>
+              </div>
+            } @else {
+              <div>{{ msg.content }}</div>
+            }
+          }
+
+          <div class="meta">
+            @if (msg.editedAt) {
+              <span class="edited-tag">edited</span>
+            }
+            <span class="time">{{ msg.timestamp | timeAgo }}</span>
+            @if (isSent(msg)) {
+              <span class="status" [style.color]="msg.status === 'READ' ? '#53bdeb' : 'inherit'">
+                {{ getStatusIcon(msg) }}
+              </span>
+            }
+          </div>
+
+          <!-- Reactions display -->
+          @if (getReactionEntries(msg).length > 0) {
+            <div class="reactions-bar">
+              @for (r of getReactionEntries(msg); track r.emoji) {
+                <span class="reaction-chip"
+                      [class.active]="hasUserReacted(msg, r.emoji)"
+                      (click)="addReaction(msg.id, r.emoji)">
+                  {{ r.emoji }} <span class="count">{{ r.count }}</span>
+                </span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Message actions (hover) -->
+        @if (!msg.deleted) {
+          <div class="message-actions">
+            <button (click)="toggleReactionPicker(msg.id)" title="React">😀</button>
+            @if (isSent(msg)) {
+              <button (click)="startEdit(msg)" title="Edit">✏️</button>
+              <button (click)="deleteMessage(msg.id)" title="Delete">🗑️</button>
+            }
+          </div>
+        }
+
+        <!-- Reaction picker popup -->
+        @if (showReactionPicker === msg.id) {
+          <div class="reaction-picker">
+            @for (emoji of quickReactions; track emoji) {
+              <button (click)="addReaction(msg.id, emoji)">{{ emoji }}</button>
+            }
+          </div>
+        }
+      </div>
+    } @empty {
+      <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+        No messages yet. Say hello! 👋
+      </div>
+    }
+  </div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      (keydown.enter)="sendMessage()"
+      (input)="onTyping()"
+      placeholder="Type a message...">
+    <button class="send-btn" (click)="sendMessage()">➤</button>
+  </div>
+</div>

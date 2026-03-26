@@ -1,0 +1,31 @@
+# Environment
+.env
+
+# MySQL data
+mysql-data/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Node
+node_modules/
+package-lock.json
+
+# Backend
+backend/target/
+backend/uploads/
+backend/test-uploads/
+*.class
+*.jar
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# OS
+.DS_Store
+Thumbs.db

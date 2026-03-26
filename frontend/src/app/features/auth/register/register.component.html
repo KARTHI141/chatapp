@@ -1,0 +1,88 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1>ChatApp</h1>
+
+    <!-- Step 1: Registration Form -->
+    @if (step === 'register') {
+      <p class="subtitle">Create your account</p>
+
+      @if (serverError) {
+        <div class="server-error">{{ serverError }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" formControlName="username" placeholder="Choose a username">
+          @if (form.get('username')?.touched && form.get('username')?.invalid) {
+            <div class="error">Username must be 3-50 characters</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" placeholder="Enter your email">
+          @if (form.get('email')?.touched && form.get('email')?.invalid) {
+            <div class="error">Valid email required</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password" placeholder="Create a password">
+          @if (form.get('password')?.touched && form.get('password')?.invalid) {
+            <div class="error">Password must be at least 6 characters</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="displayName">Display Name (optional)</label>
+          <input id="displayName" formControlName="displayName" placeholder="How others see your name">
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
+          {{ loading ? 'Sending OTP...' : 'Continue' }}
+        </button>
+      </form>
+
+      <p class="link-text">
+        Already have an account? <a routerLink="/auth/login">Sign in</a>
+      </p>
+    }
+
+    <!-- Step 2: OTP Verification -->
+    @if (step === 'verify') {
+      <p class="subtitle">Verify your email</p>
+      <p class="otp-info">We sent a 6-digit code to <strong>{{ pendingEmail }}</strong></p>
+
+      @if (serverError) {
+        <div class="server-error">{{ serverError }}</div>
+      }
+      @if (successMessage) {
+        <div class="success-message">{{ successMessage }}</div>
+      }
+
+      <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+        <div class="form-group">
+          <label for="otp">Enter OTP</label>
+          <input id="otp" formControlName="otp" placeholder="6-digit code" maxlength="6"
+                 autocomplete="one-time-code" inputmode="numeric">
+          @if (otpForm.get('otp')?.touched && otpForm.get('otp')?.invalid) {
+            <div class="error">Please enter a valid 6-digit code</div>
+          }
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="otpForm.invalid || loading">
+          {{ loading ? 'Verifying...' : 'Verify & Create Account' }}
+        </button>
+      </form>
+
+      <div class="otp-actions">
+        <button class="btn-link" (click)="resendOtp()" [disabled]="resendCooldown > 0">
+          {{ resendCooldown > 0 ? 'Resend in ' + resendCooldown + 's' : 'Resend OTP' }}
+        </button>
+        <button class="btn-link" (click)="goBack()">Back to registration</button>
+      </div>
+    }
+  </div>
+</div>

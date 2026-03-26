@@ -1,0 +1,36 @@
+<app-notification-toast></app-notification-toast>
+
+<div class="chat-layout">
+  <!-- Sidebar with chat room list -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>ChatApp</h2>
+      <div class="header-actions">
+        <button (click)="openGroupDialog()">New Group</button>
+        <button (click)="logout()">Logout</button>
+      </div>
+    </div>
+    <app-chat-list (roomSelected)="onRoomSelected($event)"></app-chat-list>
+  </div>
+
+  <!-- Main chat area -->
+  <div class="main-area">
+    @if (activeRoom) {
+      <app-chat-window [room]="activeRoom"></app-chat-window>
+    } @else {
+      <div class="no-chat">
+        <div style="text-align: center">
+          <p style="font-size: 24px; margin-bottom: 8px;">💬</p>
+          <p>Select a conversation to start chatting</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showGroupDialog) {
+  <app-create-group-dialog
+    (closed)="showGroupDialog = false"
+    (created)="onGroupCreated($event)">
+  </app-create-group-dialog>
+}
